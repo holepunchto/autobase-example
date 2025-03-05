@@ -94,7 +94,7 @@ if (base.writable) {
   await onwritable()
 } else {
   console.log('waiting to become writable...')
-  base.once('is-writable', onwritable)
+  base.once('writable', onwritable)
 }
 
 async function onwritable () {
