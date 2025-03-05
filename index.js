@@ -91,14 +91,15 @@ setInterval(async function () {
 }, 2000)
 
 if (base.writable) {
-  console.log('is writable')
   await onwritable()
 } else {
-  console.log('waiting to become writable')
+  console.log('waiting to become writable...')
   base.once('is-writable', onwritable)
 }
 
 async function onwritable () {
+  console.log('we are writable!')
+
   if (args.flags.add) {
     await base.append(JSON.stringify({ add: args.flags.add }))
   }
