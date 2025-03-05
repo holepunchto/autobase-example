@@ -14,7 +14,25 @@ class View {
   async apply (nodes, view, host) {
     for (const node of nodes) {
       const value = JSON.parse(node.value)
-      if (value.add) await host.addWriter(Buffer.from(value.add, 'hex'))
+
+      if (value.add) {
+        await host.addWriter(Buffer.from(value.add, 'hex'))
+      }
+
+      if (value.gets) {
+        const all = []
+        for (const delta of value.gets) {
+          const seq = view.length - delta
+          if (seq < 0 || view.length <= seq) continue
+          // console.log('waiting for a block', seq, view.length, view.signedLength)
+          const val = JSON.parse(await view.get(seq))
+          // console.log('got it!')
+          all.push({ seq, value })
+        }
+
+        await view.append(JSON.stringify({ gets: all }))
+      }
+
       await view.append(JSON.stringify({ echo: value }))
     }
   }
@@ -72,8 +90,13 @@ setInterval(async function () {
   console.log('last message (', seq, ') is', JSON.parse(last))
 }, 2000)
 
-if (base.writable) await onwritable()
-else base.once('is-writable', onwritable)
+if (base.writable) {
+  console.log('is writable')
+  await onwritable()
+} else {
+  console.log('waiting to become writable')
+  base.once('is-writable', onwritable)
+}
 
 async function onwritable () {
   if (args.flags.add) {
@@ -82,7 +105,18 @@ async function onwritable () {
 
   if (pace) {
     setInterval(async () => {
-      await base.append(JSON.stringify({ hello: 'world', time: Date.now(), from: name }))
+      if (Math.random() < 0.2) {
+        const gets = []
+        const len = Math.floor(Math.random() * 20)
+        for (let i = 0; i < len; i++) {
+          gets.push(Math.floor(Math.random() * base.view.length))
+        }
+        // console.log('append gets')
+        await base.append(JSON.stringify({ gets }))
+      } else {
+        // console.log('append normal')
+        await base.append(JSON.stringify({ hello: 'world', time: Date.now(), from: name }))
+      }
     }, pace)
   }
 }
