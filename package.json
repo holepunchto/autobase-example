@@ -1,0 +1,25 @@
+{
+  "name": "autobase-example",
+  "version": "0.0.0",
+  "description": "Just a runnable E2E autobase example",
+  "main": "index.js",
+  "bin": {
+    "autobase-example": "./index.js"
+  },
+  "dependencies": {
+    "autobase": "^7.0.36",
+    "corestore": "^7.0.8",
+    "hyperswarm": "^4.8.4",
+    "paparam": "^1.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/holepunchto/autobase-example.git"
+  },
+  "author": "Holepunch Inc.",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/holepunchto/autobase-example/issues"
+  },
+  "homepage": "https://github.com/holepunchto/autobase-example"
+}
