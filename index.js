@@ -72,12 +72,17 @@ setInterval(async function () {
   console.log('last message (', seq, ') is', JSON.parse(last))
 }, 2000)
 
-if (args.flags.add) {
-  await base.append(JSON.stringify({ add: args.flags.add }))
-}
+if (base.writable) await onwritable()
+else base.once('is-writable', onwritable)
 
-if (pace) {
-  setInterval(async () => {
-    await base.append(JSON.stringify({ hello: 'world', time: Date.now(), from: name }))
-  }, pace)
+async function onwritable () {
+  if (args.flags.add) {
+    await base.append(JSON.stringify({ add: args.flags.add }))
+  }
+
+  if (pace) {
+    setInterval(async () => {
+      await base.append(JSON.stringify({ hello: 'world', time: Date.now(), from: name }))
+    }, pace)
+  }
 }
