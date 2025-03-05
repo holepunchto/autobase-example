@@ -40,7 +40,9 @@ const spam = args.flags.spam ? Number(args.flags.spam || 1) : 0
 const pace = spam ? Math.round(1000 / spam) : 0
 
 const store = new Corestore('store/' + name)
-const base = new Autobase(store, key, new View())
+
+const ns = key || await Autobase.getLocalKey(store)
+const base = new Autobase(store.namespace(ns), key, new View())
 
 await base.ready()
 
