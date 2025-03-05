@@ -55,7 +55,8 @@ if (!args) process.exit(0)
 const name = args.flags.name || 'a'
 const key = args.flags.key || null
 const spam = args.flags.spam ? Number(args.flags.spam || 1) : 0
-const pace = spam ? Math.round(1000 / spam) : 0
+const pace = spam ? Math.max(10, Math.round(100 / spam)) : 0
+const n = Math.max(1, Math.ceil(spam / 100))
 
 const store = new Corestore('store/' + name)
 
@@ -105,19 +106,25 @@ async function onwritable () {
   }
 
   if (pace) {
-    setInterval(async () => {
-      if (Math.random() < 0.2) {
-        const gets = []
-        const len = Math.floor(Math.random() * 20)
-        for (let i = 0; i < len; i++) {
-          gets.push(Math.floor(Math.random() * base.view.length))
-        }
-        // console.log('append gets')
-        await base.append(JSON.stringify({ gets }))
-      } else {
-        // console.log('append normal')
-        await base.append(JSON.stringify({ hello: 'world', time: Date.now(), from: name }))
+    while (true) {
+      for (let i = 0; i < n; i++) await append()
+      await new Promise(resolve => setTimeout(resolve, pace))
+    }
+  }
+
+  async function append () {
+    if (Math.random() < 0.2) {
+      const gets = []
+      const len = Math.floor(Math.random() * 20)
+
+      for (let i = 0; i < len; i++) {
+        gets.push(Math.floor(Math.random() * base.view.length))
       }
-    }, pace)
+
+      await base.append(JSON.stringify({ gets }))
+      return
+    }
+
+    await base.append(JSON.stringify({ hello: 'world', time: Date.now(), from: name }))
   }
 }
