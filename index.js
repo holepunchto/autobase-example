@@ -47,7 +47,8 @@ const args = p.command('autobase-example',
   p.flag('--key [key]'),
   p.flag('--add [key]'),
   p.flag('--spam [messages-per-second]'),
-  p.flag('--swarm')
+  p.flag('--swarm'),
+  p.flag('--audit')
 ).parse()
 
 if (!args) process.exit(0)
@@ -59,6 +60,15 @@ const pace = spam ? Math.max(10, Math.round(100 / spam)) : 0
 const n = Math.max(1, Math.ceil(spam / 100))
 
 const store = new Corestore('store/' + name)
+
+if (args.flags.audit) {
+  for await (const { discoveryKey } of store.storage.createCoreStream()) {
+    const core = store.get({ discoveryKey, active: false })
+    await core.ready()
+    console.log('audited', core.id, await core.core.audit())
+    await core.close()
+  }
+}
 
 const ns = key || await Autobase.getLocalKey(store)
 const base = new Autobase(store.namespace(ns), key, new View())
