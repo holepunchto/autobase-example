@@ -10,7 +10,7 @@ npm install autobase-example
 
 ```
 npm install -g autobase-example
-autobase-example # prints help
+autobase-example -h # prints help
 ```
 
 ## License
