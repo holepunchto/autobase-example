@@ -6,6 +6,8 @@ Just a full E2E simple autobase example
 npm install autobase-example
 ```
 
+See other examples of using `autobase` in [`autobase/examples`](https://github.com/holepunchto/autobase/tree/main/examples).
+
 ## Usage
 
 ```
